@@ -27,7 +27,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Controller
 @RequestMapping
 public class DialogflowAgentWebhook{
-	
+
 	private String startflow = "projects/dolores-prod/locations/global/agents/a8ddc597-d9d4-408b-8895-60a19120c676/flows/00000000-0000-0000-0000-000000000000";
 
 	private String session = "projects/dolores-prod/locations/global/agents/a8ddc597-d9d4-408b-8895-60a19120c676/environments/draft/sessions/";
@@ -45,9 +45,9 @@ public class DialogflowAgentWebhook{
 		webhookResponse.setSessionInfo(webHookRequest.getSessionInfo());
 		System.out.println("response: " + new ObjectMapper().writeValueAsString(webhookResponse));
 		return webhookResponse;
-		
+
 	}
-	
+
 	@PostMapping(value="/addParameters")
 	@ResponseBody
 	public WebhookResponse addParameters(@RequestBody WebhookRequest webHookRequest) throws Exception {
@@ -58,9 +58,9 @@ public class DialogflowAgentWebhook{
 		webhookResponse.setSessionInfo(webHookRequest.getSessionInfo());
 		String currentPage = webHookRequest.getPageInfo().getCurrentPage();
 		System.out.println("response: " + new ObjectMapper().writeValueAsString(webhookResponse));
-		return webhookResponse;		
+		return webhookResponse;
 	}
-	
+
 	@PostMapping(value="/action")
 	@ResponseBody
 	public WebhookResponse action(@RequestBody WebhookRequest webHookRequest) throws JsonMappingException, JsonProcessingException {
@@ -81,83 +81,77 @@ public class DialogflowAgentWebhook{
 		String rulePath = webHookRequest.getFulfillmentInfo().getTag();
 		String override = (String) webHookRequest.getSessionInfo().getParameters().get("override");
 		if(rulePath != null && rulePath.equals("userLoginCheck")) {
-			webHookRequest.getSessionInfo().getParameters().put("state", "signInUsecase");			
+			webHookRequest.getSessionInfo().getParameters().put("state", "signInUsecase");
 		}else if(rulePath != null && rulePath.equals("getItemDetails")) {
-            webHookRequest.getSessionInfo().getParameters().put("state", "itemWithoutCaseBuyer");
+			webHookRequest.getSessionInfo().getParameters().put("state", "itemWithoutCaseBuyer");
 		}else if(rulePath != null && rulePath.equals("checkINREligibility")) {
-            webHookRequest.getSessionInfo().getParameters().put("state", "inrEligible");          
+			webHookRequest.getSessionInfo().getParameters().put("state", "inrEligible");
 		}else if(rulePath != null && rulePath.equals("buildINRSubmissionCard")) {
-            ArrayNode jsonArr = mapper.readValue(card, ArrayNode.class);
+			ArrayNode jsonArr = mapper.readValue(card, ArrayNode.class);
 			ObjectNode jsonObj = mapper.createObjectNode();
-			 jsonObj.set("elements", jsonArr);
-			 ResponseMessage message = new ResponseMessage();
-			 message.setPayload(jsonObj);
-			 webhookResponse.getFulfillmentResponse().getMessages().add(message);
+			jsonObj.set("elements", jsonArr);
+			ResponseMessage message = new ResponseMessage();
+			message.setPayload(jsonObj);
+			webhookResponse.getFulfillmentResponse().getMessages().add(message);
 		}else if(rulePath != null && rulePath.equals("submitINRRequest")) {
 			ArrayNode jsonArr = mapper.readValue(submit, ArrayNode.class);
 			ObjectNode jsonObj = mapper.createObjectNode();
 			jsonObj.set("elements", jsonArr);
 			ResponseMessage message = new ResponseMessage();
 			message.setPayload(jsonObj);
-			 webhookResponse.getFulfillmentResponse().getMessages().add(message);
+			webhookResponse.getFulfillmentResponse().getMessages().add(message);
 		}else if(rulePath != null && rulePath.equals("cancelINRRequest")) {
 			ObjectNode jsonObj = mapper.readValue(inrSubmitCancel, ObjectNode.class);
 			ResponseMessage message = new ResponseMessage();
 			message.setPayload(jsonObj);
-			 webhookResponse.getFulfillmentResponse().getMessages().add(message);
+			webhookResponse.getFulfillmentResponse().getMessages().add(message);
 		}else if(rulePath != null && rulePath.equals("getItempicker")) {
-            webHookRequest.getSessionInfo().getParameters().put("state", "itempickerCard");
-            ArrayNode jsonArr = mapper.readValue(itemPicker, ArrayNode.class);
+			webHookRequest.getSessionInfo().getParameters().put("state", "itempickerCard");
+			ArrayNode jsonArr = mapper.readValue(itemPicker, ArrayNode.class);
 			ObjectNode jsonObj = mapper.createObjectNode();
 			jsonObj.set("elements", jsonArr);
 			ResponseMessage message = new ResponseMessage();
 			message.setPayload(jsonObj);
 			webhookResponse.getFulfillmentResponse().getMessages().add(message);
 		}else if(rulePath != null && rulePath.equals("checkMoreItems")) {
-            webHookRequest.getSessionInfo().getParameters().put("state", "noItemsFound");
-            ArrayNode jsonArr = mapper.readValue(itemPicker, ArrayNode.class);
-			ObjectNode jsonObj = mapper.createObjectNode();
-			jsonObj.set("elements", jsonArr);
-			ResponseMessage message = new ResponseMessage();
-			message.setPayload(jsonObj);
-			webhookResponse.getFulfillmentResponse().getMessages().add(message);
+			webHookRequest.getSessionInfo().getParameters().put("state", "noItemsFound");
 		}else if(rulePath != null && rulePath.equals("noItemsFound")) {
-            ObjectNode jsonObj = mapper.readValue(noItems, ObjectNode.class);
+			ObjectNode jsonObj = mapper.readValue(noItems, ObjectNode.class);
 			ResponseMessage message = new ResponseMessage();
 			message.setPayload(jsonObj);
 			webhookResponse.getFulfillmentResponse().getMessages().add(message);
 		}else if(rulePath != null && rulePath.equals("noItemsForBuyerUsecase")) {
-            ObjectNode jsonObj = mapper.readValue(noItemsBuyer, ObjectNode.class);
+			ObjectNode jsonObj = mapper.readValue(noItemsBuyer, ObjectNode.class);
 			ResponseMessage message = new ResponseMessage();
 			message.setPayload(jsonObj);
 			webhookResponse.getFulfillmentResponse().getMessages().add(message);
 		}else if(rulePath != null && rulePath.equals("noItemsForSellerUsecase")) {
-            ObjectNode jsonObj = mapper.readValue(noItemsSeller, ObjectNode.class);
+			ObjectNode jsonObj = mapper.readValue(noItemsSeller, ObjectNode.class);
 			ResponseMessage message = new ResponseMessage();
 			message.setPayload(jsonObj);
 			webhookResponse.getFulfillmentResponse().getMessages().add(message);
 		}else if(rulePath != null && rulePath.equals("noItemsForUnsureUsecase")) {
-            ObjectNode jsonObj = mapper.readValue(noItemsUnsure, ObjectNode.class);
+			ObjectNode jsonObj = mapper.readValue(noItemsUnsure, ObjectNode.class);
 			ResponseMessage message = new ResponseMessage();
 			message.setPayload(jsonObj);
 			webhookResponse.getFulfillmentResponse().getMessages().add(message);
 		}else if(rulePath != null && rulePath.equals("inrForGuestUser")) {
-            ObjectNode jsonObj = mapper.readValue(inrForGuest, ObjectNode.class);
+			ObjectNode jsonObj = mapper.readValue(inrForGuest, ObjectNode.class);
 			ResponseMessage message = new ResponseMessage();
 			message.setPayload(jsonObj);
 			webhookResponse.getFulfillmentResponse().getMessages().add(message);
 		}else if(rulePath != null && rulePath.equals("inrForGuestBuyer")) {
-            ObjectNode jsonObj = mapper.readValue(inrForBuyer, ObjectNode.class);
+			ObjectNode jsonObj = mapper.readValue(inrForBuyer, ObjectNode.class);
 			ResponseMessage message = new ResponseMessage();
 			message.setPayload(jsonObj);
 			webhookResponse.getFulfillmentResponse().getMessages().add(message);
 		}else if(rulePath != null && rulePath.equals("inrForGuestSeller")) {
-            ObjectNode jsonObj = mapper.readValue(inrForSeller, ObjectNode.class);
+			ObjectNode jsonObj = mapper.readValue(inrForSeller, ObjectNode.class);
 			ResponseMessage message = new ResponseMessage();
 			message.setPayload(jsonObj);
 			webhookResponse.getFulfillmentResponse().getMessages().add(message);
 		}
-		webhookResponse.setSessionInfo(webHookRequest.getSessionInfo());		
+		webhookResponse.setSessionInfo(webHookRequest.getSessionInfo());
 		return webhookResponse;
 	}
 }

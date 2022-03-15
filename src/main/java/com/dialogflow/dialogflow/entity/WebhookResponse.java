@@ -20,6 +20,9 @@ public class WebhookResponse {
 	}
 
 	public FulfillmentResponse getFulfillmentResponse() {
+		if(fulfillmentResponse == null) {
+			fulfillmentResponse = new FulfillmentResponse();
+		}
 		return fulfillmentResponse;
 	}
 
